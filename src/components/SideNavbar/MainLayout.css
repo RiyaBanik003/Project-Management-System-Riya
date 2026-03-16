@@ -1,0 +1,6 @@
+@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap");
+
+.main {
+  background: linear-gradient(to bottom left, #c5fea8, rgb(255, 255, 255), white);
+  padding: 20px;
+}
