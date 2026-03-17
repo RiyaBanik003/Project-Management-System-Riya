@@ -11,6 +11,10 @@ const CreateProject = () => {
     e.preventDefault()
     setLoading(true)
     setError(null)
+    if (!title || !desc || !user) {
+      alert("Please fill all fields");
+      return;
+    }
     try {
       const projectData = {
         title: title,
