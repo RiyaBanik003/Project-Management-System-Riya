@@ -1,13 +1,14 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import { IMAGES } from "../../utils/constants";
+import Navbar from "../Navbar/NavBar";
 
 const Landing = () => {
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white text-gray-800">
 
       {/* Navbar */}
-      <nav className="flex justify-between items-center px-10 py-4 bg-white/90 backdrop-blur shadow-sm sticky top-0 z-50">
+      {/* <nav className="flex justify-between items-center px-10 py-4 bg-white/90 backdrop-blur shadow-sm sticky top-0 z-50">
         
         <Link to="/">
           <img
@@ -32,8 +33,8 @@ const Landing = () => {
             Get Started
           </Link>
         </div>
-      </nav>
-
+      </nav> */}
+<Navbar/>
       {/* Hero Section */}
       <section className="max-w-7xl mx-auto px-10 py-20 grid md:grid-cols-2 gap-16 items-center">
 
@@ -59,23 +60,6 @@ const Landing = () => {
             faster with our powerful project management platform built for
             modern teams.
           </p>
-
-          {/* CTA Buttons */}
-          <div className="flex gap-4 pt-2">
-            <Link
-              to="/register"
-              className="bg-[#002D74] text-white px-6 py-3 rounded-lg font-semibold shadow hover:scale-105 transition"
-            >
-              Start Free
-            </Link>
-
-            <Link
-              to="/login"
-              className="border border-gray-300 px-6 py-3 rounded-lg font-semibold hover:bg-gray-100 transition"
-            >
-              Live Demo
-            </Link>
-          </div>
 
           {/* Features */}
           <div className="grid grid-cols-2 gap-4 pt-6 text-sm">

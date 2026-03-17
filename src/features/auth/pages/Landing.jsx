@@ -16,13 +16,15 @@ const Landing = () => {
 
                 <div className="flex gap-6 items-center">
                     <Link to="/login" className="text-sm font-medium hover:text-[#002D74]">
-                        Login
+                        Login ➤
                     </Link>
+                    
                     <Link
                         to="/register"
                         className="bg-[#002D74] text-white px-5 py-2 rounded-lg text-sm hover:bg-blue-900 transition"
                     >
-                        Get Started
+                        {/* Get Started */}
+                        Sign Up ➤
                     </Link>
                 </div>
             </nav>
