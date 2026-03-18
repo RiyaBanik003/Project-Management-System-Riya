@@ -13,6 +13,7 @@ const CreateProject = () => {
     setError(null)
     if (!title || !desc || !user) {
       alert("Please fill all fields");
+      setLoading(false);
       return;
     }
     try {
