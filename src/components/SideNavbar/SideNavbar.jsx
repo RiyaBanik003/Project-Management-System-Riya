@@ -1,4 +1,5 @@
 import { COLORS, navItems, projects } from "../../constants/dashboardData";
+import { IMAGES } from "../../utils/constants";
 import { Avatar, Icon } from "../ui/DashboardPrimitives";
 
 /**
@@ -32,20 +33,12 @@ export default function SideNavbar({ activeNav, onNavChange, user }) {
           gap: 10,
         }}
       >
-        <div
-          style={{
-            width: 26,
-            height: 26,
-            background: COLORS.teal,
-            borderRadius: 7,
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-          }}
-        >
-          <Icon type="logo" size={14} />
-        </div>
-        <span style={{ fontSize: 14, fontWeight: 600, color: "#1a1917" }}>Nexus PM</span>
+        
+        <span style={{ fontSize: 14, fontWeight: 600, justifyContent: "center", alignItems: "center", color: "#002D74" }}><img
+                  src={IMAGES.logo}
+                  alt="Logo"
+                  className="h-12 w-auto object-contain"
+                /></span>
       </div>
 
       {/* Nav items */}
@@ -62,7 +55,7 @@ export default function SideNavbar({ activeNav, onNavChange, user }) {
               display: "flex",
               alignItems: "center",
               gap: 10,
-              color: isActive ? COLORS.tealDark : "#6b6965",
+              color: isActive ? COLORS.tealDark : "#002D74",
               background: isActive ? COLORS.tealLight : "transparent",
               borderRight: isActive ? `2px solid ${COLORS.teal}` : "2px solid transparent",
               fontWeight: isActive ? 500 : 400,

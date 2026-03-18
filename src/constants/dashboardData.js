@@ -1,20 +1,27 @@
 export const COLORS = {
-  teal: "#1D9E75",
-  tealLight: "#E1F5EE",
-  tealDark: "#0F6E56",
-  blue: "#378ADD",
-  blueLight: "#E6F1FB",
-  coral: "#D85A30",
-  coralLight: "#FAECE7",
-  amber: "#BA7517",
-  amberLight: "#FAEEDA",
-  pink: "#D4537E",
-  pinkLight: "#FBEAF0",
-  green: "#3B6D11",
-  greenLight: "#EAF3DE",
-  red: "#E24B4A",
-  gray: "#888780",
-  grayLight: "#F1EFE8",
+  teal: "#002D74",          // primary (renamed but same role)
+  tealLight: "#E6ECF5",     // very light blue (backgrounds)
+  tealDark: "#001A45",      // darker navy (active/text)
+
+  blue: "#1A4FA3",          // secondary blue (slightly lighter)
+  blueLight: "#E8F0FA",
+
+  coral: "#7A3E2D",         // muted warm contrast (adjusted, not random orange)
+  coralLight: "#F3E9E6",
+
+  amber: "#8A6A1A",         // toned-down gold
+  amberLight: "#F5F0E3",
+
+  pink: "#7A3A5A",          // desaturated pink (fits navy theme)
+  pinkLight: "#F4E9EF",
+
+  green: "#2F5A2F",         // deep green (kept earthy)
+  greenLight: "#E7F0E7",
+
+  red: "#A83232",           // toned red (not too loud)
+
+  gray: "#5A5A5A",
+  grayLight: "#F2F2F2",
 };
 
 export const projects = [

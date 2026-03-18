@@ -1,5 +1,4 @@
 import { Routes, Route } from "react-router-dom";
-import MainLayout from "./components/SideNavbar/MainLayout";
 import Login from "./features/auth/pages/Login";
 import Register from "./features/auth/pages/Register";
 import Landing from "./components/Landing/Landing";
@@ -9,8 +8,17 @@ import Project from "./pages/Project";
 import User from "./pages/User";
 import Deployment from "./pages/Deployment";
 import Service from "./pages/Service";
+import { useEffect } from "react";
+// import { useUserStore } from '../../../store/userStore.js'
+import { useUserStore } from "./store/userStore";
 
 function App() {
+  const loadUser = useUserStore((state) => state.loadUser);
+
+  useEffect(() => {
+    loadUser(); 
+  }, []);
+
   return (
     <Routes>
       <Route path="/" element={<Landing />} />
@@ -22,45 +30,35 @@ function App() {
         <Route
           path="/dashboard"
           element={
-            <MainLayout>
               <Dashboard />
-            </MainLayout>
           }
         />
 
         <Route
           path="/project"
           element={
-            <MainLayout>
               <Project />
-            </MainLayout>
           }
         />
 
         <Route
           path="/user"
           element={
-            <MainLayout>
               <User />
-            </MainLayout>
           }
         />
 
         <Route
           path="/deployment"
           element={
-            <MainLayout>
               <Deployment />
-            </MainLayout>
           }
         />
 
         <Route
           path="/service"
           element={
-            <MainLayout>
               <Service />
-            </MainLayout>
           }
         />
     </Routes>

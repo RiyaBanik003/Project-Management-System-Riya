@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { initialTasks } from "../../constants/dashboardData";
+import { initialTasks } from "../constants/dashboardData"
 
 const TABS = ["All", "Mine", "Overdue"];
 

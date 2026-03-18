@@ -6,18 +6,48 @@ import ProjectProgress from "./ProjectProgress";
 import SprintVelocityChart from "./SprintVelocityChart";
 import TeamWorkload from "./TeamWorkload";
 import ActivityFeed from "./ActivityFeed";
-
-const CURRENT_USER = {
-  initials: "SK",
-  name: "Soham K.",
-  role: "Admin",
-  bg: "#9FE1CB",
-  color: "#085041",
+import TaskList from "./TaskList";
+import { useUserStore } from "../store/userStore";
+// const storedUser = JSON.parse(localStorage.getItem("user"));
+// const CURRENT_USER = {
+//   initials: storedUser?.name
+//     ? storedUser.name
+//       .split(" ")
+//       .map((n) => n[0])
+//       .join("")
+//       .toUpperCase()
+//     : "U",
+//   name: storedUser?.name || "User",
+//   role: "Admin", // or get from backend later
+//   bg: "#9FE1CB",
+//   color: "#085041",
+// };
+const getGreeting = () => {
+  const hour = new Date().getHours();
+  if (hour < 12) return "Good morning";
+  if (hour < 18) return "Good afternoon";
+  return "Good evening";
 };
 
 export default function Dashboard() {
   const [activeNav, setActiveNav] = useState("Overview");
 
+  const user = useUserStore((state) => state.user);
+
+  const CURRENT_USER = {
+    initials: user?.name
+      ? user.name
+        .split(" ")
+        .map((n) => n[0])
+        .join("")
+        .toUpperCase()
+      : "U",
+    name: user?.name || "User",
+    role: "Admin",
+    bg: "#9FE1CB",
+    color: "#085041",
+  };
+  console.log("Zustand user:", user);
   return (
     <div
       style={{
@@ -28,7 +58,7 @@ export default function Dashboard() {
         background: "#f0ede5",
       }}
     >
-      {/* ── Sidebar ── */}
+      
       <SideNavbar
         activeNav={activeNav}
         onNavChange={setActiveNav}
@@ -38,7 +68,7 @@ export default function Dashboard() {
       {/* ── Main area ── */}
       <div style={{ display: "flex", flexDirection: "column", overflow: "hidden" }}>
         <TopBar
-          greeting="Good morning, Soham 👋"
+          greeting={`${getGreeting()}, ${CURRENT_USER.name} 👋`}
           dateLabel="Monday, March 16 — Week 11"
           user={CURRENT_USER}
           onNewTask={() => console.log("new task")}

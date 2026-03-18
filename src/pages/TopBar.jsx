@@ -1,19 +1,26 @@
-// import { COLORS } from "../../constants/dashboardData";
 import { COLORS } from "../constants/dashboardData";
-// import { Avatar, Icon } from "../ui/DashboardPrimitives";
 import { Avatar, Icon } from "../components/ui/DashboardPrimitives";
+import { Link, useNavigate } from "react-router-dom";
+import { useUserStore } from "../store/userStore";
 
 /**
  * TopBar
- * Props:
- *   greeting   {string}  – e.g. "Good morning, Soham 👋"
- *   dateLabel  {string}  – e.g. "Monday, March 16 — Week 11"
- *   user       { initials, bg, color }
- *   onNewTask  {() => void}
- *   onFilter   {() => void}
- *   onExport   {() => void}
  */
-export default function TopBar({ greeting, dateLabel, user, onNewTask, onFilter, onExport }) {
+export default function TopBar({
+  greeting,
+  dateLabel,
+  user,
+  onExport,
+}) {
+  const logout = useUserStore((state) => state.logout);
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    logout(); // clear Zustand state
+    localStorage.removeItem("token"); // remove token if stored
+    navigate("/login"); // redirect to login
+  };
+
   const btnBase = {
     padding: "6px 14px",
     fontSize: 12,
@@ -33,6 +40,7 @@ export default function TopBar({ greeting, dateLabel, user, onNewTask, onFilter,
         justifyContent: "space-between",
       }}
     >
+      {/* LEFT */}
       <div>
         <div style={{ fontSize: 15, fontWeight: 600, color: "#1a1917" }}>
           {greeting ?? "Good morning 👋"}
@@ -42,35 +50,55 @@ export default function TopBar({ greeting, dateLabel, user, onNewTask, onFilter,
         </div>
       </div>
 
+      {/* RIGHT */}
       <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-        <button
-          onClick={onFilter}
-          style={{ ...btnBase, border: "0.5px solid #c8c5be", background: "transparent", color: "#3d3c39" }}
-        >
-          Filter
-        </button>
+
+        {/* Export */}
         <button
           onClick={onExport}
-          style={{ ...btnBase, border: "0.5px solid #c8c5be", background: "transparent", color: "#3d3c39" }}
+          style={{
+            ...btnBase,
+            border: "0.5px solid #c8c5be",
+            background: "transparent",
+            color: "#3d3c39",
+          }}
         >
           Export
         </button>
+
+        {/* New Task */}
+        <Link to="/editor" style={{ textDecoration: "none" }}>
+          <button
+            style={{
+              ...btnBase,
+              border: "none",
+              background: COLORS.teal,
+              color: "#fff",
+              fontWeight: 500,
+              display: "flex",
+              alignItems: "center",
+              gap: 5,
+            }}
+          >
+            <Icon type="plus" size={12} />
+            New Task
+          </button>
+        </Link>
+
+        {/* Logout */}
         <button
-          onClick={onNewTask}
+          onClick={handleLogout}
           style={{
             ...btnBase,
-            border: "none",
-            background: COLORS.teal,
-            color: "#fff",
-            fontWeight: 500,
-            display: "flex",
-            alignItems: "center",
-            gap: 5,
+            border: "0.5px solid #c8c5be",
+            background: "transparent",
+            color: "#3d3c39",
           }}
         >
-          <Icon type="plus" size={12} />
-          New Task
+          Logout
         </button>
+
+        {/* Avatar */}
         <Avatar
           initials={user?.initials ?? "SK"}
           bg={user?.bg ?? "#9FE1CB"}
