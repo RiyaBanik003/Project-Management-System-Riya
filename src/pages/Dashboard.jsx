@@ -2,11 +2,11 @@ import { useState } from "react";
 import SideNavbar from "../components/SideNavbar/SideNavbar";
 import TopBar from "./TopBar";
 import MetricsRow from "./MetricsRow";
-import ProjectProgress from "./ProjectProgress";
+// import ProjectProgress from "./ProjectProgress";
 import SprintVelocityChart from "./SprintVelocityChart";
 import TeamWorkload from "./TeamWorkload";
 import ActivityFeed from "./ActivityFeed";
-import TaskList from "./TaskList";
+// import TaskList from "./TaskList";
 import { useUserStore } from "../store/userStore";
 // const storedUser = JSON.parse(localStorage.getItem("user"));
 // const CURRENT_USER = {
@@ -90,10 +90,10 @@ export default function Dashboard() {
 
           {/* Row 2 — Tasks + Progress & Chart */}
           <div style={{ display: "grid", gridTemplateColumns: "1.4fr 1fr", gap: 16 }}>
-            <TaskList />
+            {/* <TaskList /> */}
 
             <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
-              <ProjectProgress />
+              {/* <ProjectProgress /> */}
               <SprintVelocityChart />
             </div>
           </div>
