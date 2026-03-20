@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { loginUser } from "../../../api/auth.api";
 import { useUserStore } from "../../../store/userStore";
@@ -14,12 +14,7 @@ const Login = () => {
 
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
-  useEffect(() => {
-    const token = localStorage.getItem("accessToken");
-    if (!token) {
-      navigate("/login");
-    }
-  }, [navigate]);
+  
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
@@ -36,8 +31,13 @@ const Login = () => {
 
       const { accessToken, user } = res.data;
 
-      localStorage.setItem("accessToken", accessToken);
-      setUser(user);
+      const userWithToken = {
+        ...user,
+        accessToken
+      };
+
+      localStorage.setItem("user", JSON.stringify(userWithToken));
+      setUser(userWithToken);
 
       navigate("/dashboard");
     } catch (err) {

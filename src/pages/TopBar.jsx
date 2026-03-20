@@ -81,7 +81,7 @@ export default function TopBar({
             }}
           >
             <Icon type="plus" size={12} />
-            New Task
+            Create Task
           </button>
         </Link>
 
