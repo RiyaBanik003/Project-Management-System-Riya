@@ -1,7 +1,7 @@
-import { COLORS, navItems, projects } from "../../constants/dashboardData";
+import { COLORS, navItems} from "../../constants/dashboardData";
 import { IMAGES } from "../../utils/constants";
 import { Avatar, Icon } from "../ui/DashboardPrimitives";
-
+import SidebarItem from "./SidebarItem";
 /**
  * SideNavbar
  * Props:
@@ -9,7 +9,7 @@ import { Avatar, Icon } from "../ui/DashboardPrimitives";
  *   onNavChange {(label) => void} – called when user clicks a nav item
  *   user        { initials, name, role } – logged-in user info
  */
-export default function SideNavbar({ activeNav, onNavChange, user }) {
+export default function SideNavbar({ user }) {
   return (
     <nav
       style={{
@@ -42,34 +42,12 @@ export default function SideNavbar({ activeNav, onNavChange, user }) {
       </div>
 
       {/* Nav items */}
-      {navItems.map(({ icon, label }) => {
-        const isActive = activeNav === label;
-        return (
-          <div
-            key={label}
-            onClick={() => onNavChange?.(label)}
-            style={{
-              padding: "8px 20px",
-              fontSize: 13,
-              cursor: "pointer",
-              display: "flex",
-              alignItems: "center",
-              gap: 10,
-              color: isActive ? COLORS.tealDark : "#002D74",
-              background: isActive ? COLORS.tealLight : "transparent",
-              borderRight: isActive ? `2px solid ${COLORS.teal}` : "2px solid transparent",
-              fontWeight: isActive ? 500 : 400,
-              transition: "all 0.15s",
-            }}
-          >
-            <Icon type={icon} />
-            {label}
-          </div>
-        );
-      })}
+      {navItems.map((item, index) => (
+  <SidebarItem key={index} item={item} />
+))}
 
       {/* Projects section */}
-      <div
+      {/* <div
         style={{
           padding: "16px 20px 6px",
           fontSize: 11,
@@ -80,10 +58,10 @@ export default function SideNavbar({ activeNav, onNavChange, user }) {
           marginTop: 8,
         }}
       >
-        Projects
-      </div>
+        
+      </div> */}
 
-      {projects.map((p) => (
+      {/* {projects.map((p) => (
         <div
           key={p.id}
           style={{
@@ -104,7 +82,7 @@ export default function SideNavbar({ activeNav, onNavChange, user }) {
           />
           {p.name}
         </div>
-      ))}
+      ))} */}
 
       {/* User profile at bottom */}
       <div

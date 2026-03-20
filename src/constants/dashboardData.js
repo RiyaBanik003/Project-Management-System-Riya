@@ -24,12 +24,12 @@ export const COLORS = {
   grayLight: "#F2F2F2",
 };
 
-export const projects = [
-  { id: 1, name: "Website Redesign", color: COLORS.blue, progress: 72 },
-  { id: 2, name: "Mobile App v2", color: COLORS.teal, progress: 45 },
-  { id: 3, name: "API Integration", color: COLORS.coral, progress: 88 },
-  { id: 4, name: "Q2 Marketing", color: COLORS.amber, progress: 31 },
-];
+// export const projects = [
+//   { id: 1, name: "Website Redesign", color: COLORS.blue, progress: 72 },
+//   { id: 2, name: "Mobile App v2", color: COLORS.teal, progress: 45 },
+//   { id: 3, name: "API Integration", color: COLORS.coral, progress: 88 },
+//   { id: 4, name: "Q2 Marketing", color: COLORS.amber, progress: 31 },
+// ];
 
 export const initialTasks = [
   { id: 1, text: "Finalize homepage wireframes", tag: "Design", tagColor: COLORS.blue, tagBg: COLORS.blueLight, due: "Mar 14", done: true },
@@ -66,11 +66,18 @@ export const sprintData = [
 ];
 
 export const navItems = [
-  { icon: "home", label: "Overview" },
-  { icon: "calendar", label: "Timeline" },
-  { icon: "check", label: "My Tasks" },
-  { icon: "users", label: "Team" },
-  { icon: "chart", label: "Analytics" },
+  { icon: "home", label: "Overview", path: "/dashboard" },
+  { icon: "roles", label: "Role", path: "/role" },
+  { icon: "users", label: "User", path: "/user" },
+
+  {
+    icon: "projects",
+    label: "Project",
+    children: [
+      { label: "Create Project", path: "/editor" },
+      { label: "View Project", path: "/view-project" }
+    ]
+  }
 ];
 
 export const metrics = [
@@ -79,3 +86,4 @@ export const metrics = [
   { label: "Overdue", value: "7", badge: "down", badgeText: "+3", subText: "since last week" },
   { label: "Team velocity", value: "84%", badge: "up", badgeText: "+5%", subText: "vs last sprint" },
 ];
+

@@ -2,7 +2,7 @@ import React from "react";
 import ReactQuill from "react-quill-new";
 import "react-quill-new/dist/quill.snow.css";
 
-export default function EditorPreview({value, setValue}) {
+export default function EditorPreview({value, onChange}) { // Change setValue to onChange
     
     return (
         <div className=" ">
@@ -16,7 +16,7 @@ export default function EditorPreview({value, setValue}) {
                             <ReactQuill
                                 theme="snow"
                                 value={value}
-                                onChange={setValue}
+                                onChange={onChange} // Change setValue to onChange
                                 placeholder="Enter project description..."
                                 modules={{
                                     toolbar: [
@@ -32,12 +32,6 @@ export default function EditorPreview({value, setValue}) {
                             />
                         </div>
                     </div>
-
-                    {/* Status Select */}
-                   
-
-                    {/* Buttons */}
-                    
                 </div>
             
     );

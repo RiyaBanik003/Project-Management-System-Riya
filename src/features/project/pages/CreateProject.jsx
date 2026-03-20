@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import EditorPreview from '../components/RichTextEditor'
-import { createProject } from '../services/projectService'
+import {createProject} from '../services/projectService'
 import { getAllUsers } from '../services/userService'
 
 const CreateProject = () => {
@@ -9,58 +9,129 @@ const CreateProject = () => {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState(null)
   const [users, setUsers] = useState([])
-  const [selectedUser, setSelectedUser] = useState("")
-  const [role, setRole] = useState("")
+  
+  // Change from single user to array of selected members with roles
+  const [selectedMembers, setSelectedMembers] = useState([])
+  
+  // For the dropdown selection
+  const [selectedUserId, setSelectedUserId] = useState("")
+  const [selectedRole, setSelectedRole] = useState("")
+
   useEffect(() => {
     const fetchUsers = async () => {
       try {
         const res = await getAllUsers()
-
-        console.log("Users API:", res) // check this
-
-        setUsers(res.data || res)
+        console.log("Users API:", res)
+        
+        if (res && res.success && Array.isArray(res.data)) {
+          setUsers(res.data)
+        } else {
+          console.warn("No users data received, using empty array")
+          setUsers([])
+        }
       } catch (err) {
         console.log("Error fetching users", err)
+        setUsers([])
       }
     }
 
     fetchUsers()
   }, [])
 
-  const handleCreateProject = async (e) => {
-    e.preventDefault()
-    setLoading(true)
-    setError(null)
-    if (!title || !desc || !selectedUser || !role) {
-      alert("Please fill all fields")
-      setLoading(false)
+  // Function to add a member to the list
+  const addMember = () => {
+    if (!selectedUserId || !selectedRole) {
+      alert("Please select both user and role")
       return
     }
-    try {
-      const projectData = {
-        title,
-        desc,
-        users: [
-          {
-            userId: selectedUser,
-            role: role
-          }
-        ]
-      }
-      const response = await createProject(projectData)
-      console.log("Project created", response)
-      alert("Project created!")
-      setTitle("")
-      setDesc("")
-      setSelectedUser("")
-      setRole("")
-    } catch (error) {
-      console.log("Error creating project", error)
-      setError(error.response?.data?.message || 'Failed to create project')
-    } finally {
-      setLoading(false)
+
+    // Check if user is already added
+    if (selectedMembers.some(member => member.userId === selectedUserId)) {
+      alert("This user is already added")
+      return
     }
+
+    // Find the selected user details
+    const selectedUser = users.find(u => u.id.toString() === selectedUserId)
+    
+    // Add to members list
+    setSelectedMembers([
+      ...selectedMembers,
+      {
+        userId: selectedUserId,
+        roleName: selectedRole,
+        userName: selectedUser ? `${selectedUser.firstName} ${selectedUser.lastName}` : selectedUserId
+      }
+    ])
+
+    // Reset selection
+    setSelectedUserId("")
+    setSelectedRole("")
   }
+
+  // Function to remove a member from the list
+  const removeMember = (userId) => {
+    setSelectedMembers(selectedMembers.filter(member => member.userId !== userId))
+  }
+
+  const handleCreateProject = async (e) => {
+  e.preventDefault()
+  
+  if (!title || !desc) {
+    alert("Please fill project title and description")
+    return
+  }
+
+  if (selectedMembers.length === 0) {
+    alert("Please add at least one member to the project")
+    return
+  }
+  
+  setLoading(true)
+  setError(null)
+  
+  try {
+    // Function to remove HTML tags
+    const stripHtmlTags = (html) => {
+      // Create a temporary div element
+      const tempDiv = document.createElement('div');
+      tempDiv.innerHTML = html;
+      // Get text content without HTML tags
+      return tempDiv.textContent || tempDiv.innerText || '';
+    }
+
+    // Clean the description by removing HTML tags
+    const cleanDescription = stripHtmlTags(desc);
+    
+    const projectData = {
+      title: title,
+      description: cleanDescription, // Use cleaned description without HTML tags
+      members: selectedMembers.map(({ userId, roleName }) => ({
+        userId,
+        roleName
+      }))
+    }
+    
+    console.log("Sending project data:", projectData)
+    
+    const response = await createProject(projectData)
+    console.log("Project created", response)
+    alert("Project created successfully!")
+    
+    // Reset form
+    setTitle("")
+    setDesc("")
+    setSelectedMembers([])
+    setSelectedUserId("")
+    setSelectedRole("")
+    
+  } catch (error) {
+    console.log("Error creating project", error)
+    setError(error.response?.data?.message || 'Failed to create project')
+  } finally {
+    setLoading(false)
+  }
+}
 
   return (
     <>
@@ -330,6 +401,83 @@ const CreateProject = () => {
         }
 
         .cp-btn-submit:hover .cp-btn-arrow { transform: translateX(3px); }
+
+        /* New styles for members list */
+        .cp-members-list {
+          margin-top: 16px;
+          border: 1px solid #e2e8f0;
+          border-radius: 12px;
+          padding: 16px;
+          background: #fafbff;
+        }
+
+        .cp-member-item {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          padding: 10px;
+          border-bottom: 1px solid #e2e8f0;
+        }
+
+        .cp-member-item:last-child {
+          border-bottom: none;
+        }
+
+        .cp-member-info {
+          display: flex;
+          gap: 12px;
+          align-items: center;
+        }
+
+        .cp-member-name {
+          font-weight: 600;
+          color: #001a4d;
+        }
+
+        .cp-member-role {
+          background: #e2e8f0;
+          padding: 4px 8px;
+          border-radius: 6px;
+          font-size: 12px;
+          color: #002d74;
+        }
+
+        .cp-remove-btn {
+          background: none;
+          border: none;
+          color: #c0392b;
+          cursor: pointer;
+          font-size: 18px;
+          padding: 0 8px;
+        }
+
+        .cp-remove-btn:hover {
+          color: #e74c3c;
+        }
+
+        .cp-add-member-row {
+          display: flex;
+          gap: 10px;
+          margin-top: 10px;
+        }
+
+        .cp-add-member-row select {
+          flex: 1;
+        }
+
+        .cp-add-btn {
+          background: #002d74;
+          color: white;
+          border: none;
+          border-radius: 8px;
+          padding: 0 20px;
+          cursor: pointer;
+          font-weight: 600;
+        }
+
+        .cp-add-btn:hover {
+          background: #001a4d;
+        }
       `}</style>
 
       <div className="cp-root">
@@ -371,41 +519,71 @@ const CreateProject = () => {
                   <EditorPreview value={desc} onChange={setDesc} />
                 </div>
               </div>
+
               <div className="cp-field">
                 <label className="cp-label">
                   <span className="cp-step">3</span>
-                  Select User
+                  Add Team Members
                 </label>
 
-                <select
-                  value={selectedUser}
-                  onChange={(e) => setSelectedUser(e.target.value)}
-                  className="cp-input cp-select"
-                >
-                  <option value="">Select user</option>
+                {/* Member selection row */}
+                <div className="cp-add-member-row">
+                  <select
+                    value={selectedUserId}
+                    onChange={(e) => setSelectedUserId(e.target.value)}
+                    className="cp-input cp-select"
+                  >
+                    <option value="">Select user</option>
+                    {users
+                      .filter(u => !selectedMembers.some(m => m.userId === u.id.toString()))
+                      .map((u) => (
+                        <option key={u.id} value={u.id}>
+                          {u.firstName} {u.lastName} ({u.email})
+                        </option>
+                      ))}
+                  </select>
 
-                  {users.map((u) => (
-                    <option key={u._id} value={u._id}>
-                      {u.name || u.email}
-                    </option>
-                  ))}
-                </select>
-              </div>
-              <div className="cp-field">
-                <label className="cp-label">
-                  <span className="cp-step">4</span>
-                  Assign Role
-                </label>
-                <select
-                  value={role}
-                  onChange={(e) => setRole(e.target.value)}
-                  className="cp-input cp-select"
-                >
-                  <option value="">Select a role to add</option>
-                  <option value="Developer">👨‍💻 Developer</option>
-                  <option value="Tester">🧪 Tester</option>
-                  <option value="Admin">🛡️ Admin</option>
-                </select>
+                  <select
+                    value={selectedRole}
+                    onChange={(e) => setSelectedRole(e.target.value)}
+                    className="cp-input cp-select"
+                  >
+                    <option value="">Select role</option>
+                    <option value="Developer">👨‍💻 Developer</option>
+                    <option value="Tester">🧪 Tester</option>
+                    <option value="Admin">🛡️ Admin</option>
+                  </select>
+
+                  <button 
+                    type="button" 
+                    onClick={addMember}
+                    className="cp-add-btn"
+                  >
+                    Add
+                  </button>
+                </div>
+
+                {/* Display selected members */}
+                {selectedMembers.length > 0 && (
+                  <div className="cp-members-list">
+                    <h4 style={{ margin: '0 0 10px 0', color: '#002d74' }}>Team Members:</h4>
+                    {selectedMembers.map((member) => (
+                      <div key={member.userId} className="cp-member-item">
+                        <div className="cp-member-info">
+                          <span className="cp-member-name">{member.userName}</span>
+                          <span className="cp-member-role">{member.roleName}</span>
+                        </div>
+                        <button
+                          type="button"
+                          onClick={() => removeMember(member.userId)}
+                          className="cp-remove-btn"
+                        >
+                          ×
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                )}
               </div>
 
               <div className="cp-divider" />

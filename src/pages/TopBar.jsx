@@ -10,7 +10,7 @@ export default function TopBar({
   greeting,
   dateLabel,
   user,
-  onExport,
+  // onExport,
 }) {
   const logout = useUserStore((state) => state.logout);
   const navigate = useNavigate();
@@ -53,37 +53,6 @@ export default function TopBar({
       {/* RIGHT */}
       <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
 
-        {/* Export */}
-        <button
-          onClick={onExport}
-          style={{
-            ...btnBase,
-            border: "0.5px solid #c8c5be",
-            background: "transparent",
-            color: "#3d3c39",
-          }}
-        >
-          Export
-        </button>
-
-        {/* New Task */}
-        <Link to="/editor" style={{ textDecoration: "none" }}>
-          <button
-            style={{
-              ...btnBase,
-              border: "none",
-              background: COLORS.teal,
-              color: "#fff",
-              fontWeight: 500,
-              display: "flex",
-              alignItems: "center",
-              gap: 5,
-            }}
-          >
-            <Icon type="plus" size={12} />
-            Create Task
-          </button>
-        </Link>
 
         {/* Logout */}
         <button
