@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { getProjectById, deleteProject, updateProject } from '../features/project/services/projectService';
-import { ArrowLeft, Calendar, User, Tag, Users, Clock, Edit, Trash2, X, Save } from 'lucide-react';
+import { getThreadsByProjectId, deleteThread } from '../features/thread/service/threadService'; // Add this import
+import { ArrowLeft, Calendar, User, Tag, Users, Clock, Edit, Trash2, X, Save, MessageSquare, Trash2 as TrashIcon, Eye } from 'lucide-react'; // Add MessageSquare, TrashIcon, Eye
 
 const ViewProject = () => {
   const { id } = useParams();
@@ -10,6 +11,9 @@ const ViewProject = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [activeTab, setActiveTab] = useState('overview');
+  
+  // Threads state
+  
   
   // Edit mode state
   const [isEditing, setIsEditing] = useState(false);
@@ -27,9 +31,20 @@ const ViewProject = () => {
   const [deleteSuccess, setDeleteSuccess] = useState(false);
   const [deleteError, setDeleteError] = useState('');
 
+  // Delete thread modal state
+  const [showDeleteThreadModal, setShowDeleteThreadModal] = useState(false);
+  const [threadToDelete, setThreadToDelete] = useState(null);
+  const [deletingThread, setDeletingThread] = useState(false);
+
   useEffect(() => {
     fetchProject();
   }, [id]);
+
+  useEffect(() => {
+    if (activeTab === 'threads') {
+      fetchThreads();
+    }
+  }, [activeTab, id]);
 
   const fetchProject = async () => {
     try {
@@ -39,7 +54,6 @@ const ViewProject = () => {
       
       if (response && response.success) {
         setProject(response.data);
-        // Initialize edit form with project data
         setEditFormData({
           title: response.data.title || '',
           description: response.data.description || ''
@@ -52,6 +66,73 @@ const ViewProject = () => {
       setError("Failed to load project");
     } finally {
       setLoading(false);
+    }
+  };
+
+// At the top with other state declarations
+const [threads, setThreads] = useState([]); // Initialize as empty array
+const [threadsLoading, setThreadsLoading] = useState(false);
+
+// The fetchThreads function - fixed version
+const fetchThreads = async () => {
+  try {
+    setThreadsLoading(true);
+    const response = await getThreadsByProjectId(id);
+    console.log("Threads response:", response);
+    
+    // SAFE: Always ensure threads is an array
+    let threadsArray = [];
+    
+    if (response && response.success) {
+      // Handle different possible response structures
+      if (response.data && Array.isArray(response.data)) {
+        threadsArray = response.data;
+      } else if (response.data && response.data.data && Array.isArray(response.data.data)) {
+        threadsArray = response.data.data;
+      } else if (Array.isArray(response)) {
+        threadsArray = response;
+      } else {
+        threadsArray = [];
+      }
+    }
+    
+    setThreads(threadsArray);
+  } catch (err) {
+    console.error("Error fetching threads:", err);
+    setThreads([]); // Always set to empty array on error
+  } finally {
+    setThreadsLoading(false);
+  }
+};
+
+// In the Threads Tab JSX:
+
+
+  // Handle delete thread
+  const handleDeleteThreadClick = (thread) => {
+    setThreadToDelete(thread);
+    setShowDeleteThreadModal(true);
+  };
+
+  const handleDeleteThreadConfirm = async () => {
+    if (!threadToDelete) return;
+    
+    try {
+      setDeletingThread(true);
+      const response = await deleteThread(threadToDelete.id);
+      
+      if (response && response.success) {
+        setThreads(threads.filter(t => t.id !== threadToDelete.id));
+        setShowDeleteThreadModal(false);
+        setThreadToDelete(null);
+      } else {
+        alert(response?.message || "Failed to delete thread");
+      }
+    } catch (err) {
+      console.error("Error deleting thread:", err);
+      alert("Failed to delete thread");
+    } finally {
+      setDeletingThread(false);
     }
   };
 
@@ -83,7 +164,6 @@ const ViewProject = () => {
 
   // Handle save changes
   const handleSaveChanges = async () => {
-    // Validate
     if (!editFormData.title.trim()) {
       setUpdateError('Project title is required');
       return;
@@ -103,15 +183,12 @@ const ViewProject = () => {
       
       if (response && response.success) {
         setUpdateSuccess(true);
-        
-        // Update the project state with new data
         setProject(prev => ({
           ...prev,
           title: editFormData.title,
           description: editFormData.description
         }));
         
-        // Exit edit mode after 1.5 seconds
         setTimeout(() => {
           setIsEditing(false);
           setUpdateSuccess(false);
@@ -127,7 +204,7 @@ const ViewProject = () => {
     }
   };
 
-  // Handle delete button click - open confirmation modal
+  // Handle delete button click
   const handleDeleteClick = () => {
     setShowDeleteModal(true);
   };
@@ -143,7 +220,6 @@ const ViewProject = () => {
       
       if (response && response.success) {
         setDeleteSuccess(true);
-        
         setTimeout(() => {
           setShowDeleteModal(false);
           navigate('/view-project');
@@ -159,7 +235,6 @@ const ViewProject = () => {
     }
   };
 
-  // Handle delete cancel
   const handleDeleteCancel = () => {
     setShowDeleteModal(false);
     setDeleteError('');
@@ -181,6 +256,27 @@ const ViewProject = () => {
       month: 'short',
       day: 'numeric'
     });
+  };
+
+  // Priority badge color
+  const getPriorityBadge = (priority) => {
+    switch(priority) {
+      case 1: return 'bg-green-100 text-green-800';
+      case 2: return 'bg-yellow-100 text-yellow-800';
+      case 3: return 'bg-orange-100 text-orange-800';
+      case 4: return 'bg-red-100 text-red-800';
+      default: return 'bg-gray-100 text-gray-800';
+    }
+  };
+
+  const getPriorityLabel = (priority) => {
+    switch(priority) {
+      case 1: return 'Low';
+      case 2: return 'Medium';
+      case 3: return 'High';
+      case 4: return 'Critical';
+      default: return 'Unknown';
+    }
   };
 
   if (loading) {
@@ -327,23 +423,16 @@ const ViewProject = () => {
         </div>
       )}
 
-      {/* Delete Confirmation Modal */}
+      {/* Delete Project Confirmation Modal */}
       {showDeleteModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
           <div className="bg-white rounded-xl max-w-md w-full shadow-2xl">
-            {/* Modal Header */}
             <div className="flex justify-between items-center p-6 border-b border-gray-200">
               <h3 className="text-xl font-bold text-gray-800">Delete Project</h3>
-              <button
-                onClick={handleDeleteCancel}
-                className="text-gray-500 hover:text-gray-700"
-                disabled={deleting || deleteSuccess}
-              >
+              <button onClick={handleDeleteCancel} className="text-gray-500 hover:text-gray-700" disabled={deleting || deleteSuccess}>
                 <X className="w-5 h-5" />
               </button>
             </div>
-
-            {/* Modal Body */}
             <div className="p-6">
               {deleteSuccess ? (
                 <div className="text-center py-4">
@@ -366,27 +455,16 @@ const ViewProject = () => {
                       This action cannot be undone. All project data, including members and threads, will be permanently deleted.
                     </p>
                   </div>
-
                   {deleteError && (
                     <div className="mb-4 bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg text-sm">
                       <span className="font-semibold">Error:</span> {deleteError}
                     </div>
                   )}
-
-                  {/* Modal Actions */}
                   <div className="flex justify-end space-x-3">
-                    <button
-                      onClick={handleDeleteCancel}
-                      disabled={deleting}
-                      className="px-4 py-2 border-2 border-gray-300 rounded-lg text-gray-700 font-medium hover:bg-gray-50 transition disabled:opacity-50 disabled:cursor-not-allowed"
-                    >
+                    <button onClick={handleDeleteCancel} disabled={deleting} className="px-4 py-2 border-2 border-gray-300 rounded-lg text-gray-700 font-medium hover:bg-gray-50 transition disabled:opacity-50">
                       Cancel
                     </button>
-                    <button
-                      onClick={handleDeleteConfirm}
-                      disabled={deleting}
-                      className="px-4 py-2 bg-red-600 text-white rounded-lg font-medium hover:bg-red-700 transition disabled:opacity-50 disabled:cursor-not-allowed flex items-center"
-                    >
+                    <button onClick={handleDeleteConfirm} disabled={deleting} className="px-4 py-2 bg-red-600 text-white rounded-lg font-medium hover:bg-red-700 transition disabled:opacity-50 flex items-center">
                       {deleting ? (
                         <>
                           <div className="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent mr-2"></div>
@@ -399,6 +477,45 @@ const ViewProject = () => {
                   </div>
                 </>
               )}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Delete Thread Confirmation Modal */}
+      {showDeleteThreadModal && threadToDelete && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-xl max-w-md w-full shadow-2xl">
+            <div className="flex justify-between items-center p-6 border-b border-gray-200">
+              <h3 className="text-xl font-bold text-gray-800">Delete Thread</h3>
+              <button onClick={() => setShowDeleteThreadModal(false)} className="text-gray-500 hover:text-gray-700">
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+            <div className="p-6">
+              <div className="mb-6">
+                <p className="text-gray-600">
+                  Are you sure you want to delete thread <span className="font-semibold text-gray-800">"{threadToDelete.topic}"</span>?
+                </p>
+                <p className="text-sm text-gray-500 mt-2">
+                  This action cannot be undone.
+                </p>
+              </div>
+              <div className="flex justify-end space-x-3">
+                <button onClick={() => setShowDeleteThreadModal(false)} disabled={deletingThread} className="px-4 py-2 border-2 border-gray-300 rounded-lg text-gray-700 font-medium hover:bg-gray-50 transition">
+                  Cancel
+                </button>
+                <button onClick={handleDeleteThreadConfirm} disabled={deletingThread} className="px-4 py-2 bg-red-600 text-white rounded-lg font-medium hover:bg-red-700 transition disabled:opacity-50 flex items-center">
+                  {deletingThread ? (
+                    <>
+                      <div className="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent mr-2"></div>
+                      Deleting...
+                    </>
+                  ) : (
+                    'Yes, Delete Thread'
+                  )}
+                </button>
+              </div>
             </div>
           </div>
         </div>
@@ -441,10 +558,10 @@ const ViewProject = () => {
           <div className="bg-white rounded-lg border border-gray-200 p-4">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-xs text-gray-500 uppercase">Updated</p>
-                <p className="text-sm font-semibold text-gray-800">{formatDate(project.updatedAt)}</p>
+                <p className="text-xs text-gray-500 uppercase">Threads</p>
+                <p className="text-sm font-semibold text-gray-800">{threads.length}</p>
               </div>
-              <Clock className="w-8 h-8 text-gray-400" />
+              <MessageSquare className="w-8 h-8 text-gray-400" />
             </div>
           </div>
         </div>
@@ -472,6 +589,16 @@ const ViewProject = () => {
                 }`}
               >
                 Team Members ({project.members?.length || 0})
+              </button>
+              <button
+                onClick={() => setActiveTab('threads')}
+                className={`px-6 py-3 text-sm font-medium ${
+                  activeTab === 'threads'
+                    ? 'border-b-2 border-[#002d74] text-[#002d74]'
+                    : 'text-gray-500 hover:text-gray-700'
+                }`}
+              >
+                Threads ({threads.length})
               </button>
             </nav>
           </div>
@@ -529,6 +656,91 @@ const ViewProject = () => {
                 )}
               </div>
             )}
+
+            {/* Threads Tab */}
+            {activeTab === 'threads' && (
+  <div>
+    <div className="flex justify-between items-center mb-4">
+      <h3 className="text-lg font-semibold text-gray-800">Project Threads</h3>
+      <button
+        onClick={() => navigate(`/project/${id}/create-thread`)}
+        className="inline-flex items-center px-4 py-2 bg-[#002d74] text-white rounded-lg hover:bg-[#001a4d] transition text-sm font-medium"
+      >
+        <MessageSquare className="w-4 h-4 mr-2" />
+        Create New Thread
+      </button>
+    </div>
+
+    {threadsLoading ? (
+      <div className="text-center py-12">
+        <div className="animate-spin rounded-full h-8 w-8 border-2 border-[#002d74] border-t-transparent mx-auto"></div>
+        <p className="text-gray-500 mt-2">Loading threads...</p>
+      </div>
+    ) : !Array.isArray(threads) || threads.length === 0 ? (
+      <div className="text-center py-12 bg-gray-50 rounded-lg border border-gray-200">
+        <MessageSquare className="w-12 h-12 text-gray-400 mx-auto mb-3" />
+        <h4 className="text-lg font-medium text-gray-700 mb-2">No Threads Yet</h4>
+        <p className="text-gray-500 mb-4">Start a conversation about this project</p>
+        <button
+          onClick={() => navigate(`/project/${id}/create-thread`)}
+          className="inline-flex items-center px-4 py-2 bg-[#002d74] text-white rounded-lg hover:bg-[#001a4d] transition"
+        >
+          Create First Thread
+        </button>
+      </div>
+    ) : (
+      <div className="space-y-4">
+        {threads.map((thread) => (
+          <div key={thread.id} className="bg-gray-50 rounded-lg border border-gray-200 p-4 hover:shadow-md transition">
+            <div className="flex justify-between items-start">
+              <div className="flex-1">
+                <div className="flex items-center gap-3 mb-2">
+                  <h4 className="text-lg font-semibold text-gray-800">{thread.topic}</h4>
+                  <span className={`px-2 py-1 rounded-full text-xs font-medium ${getPriorityBadge(thread.priority)}`}>
+                    {getPriorityLabel(thread.priority)}
+                  </span>
+                </div>
+                <p className="text-gray-600 text-sm mb-3">{thread.description}</p>
+                <div className="flex items-center gap-4 text-xs text-gray-500">
+                  <span className="flex items-center">
+                    <User className="w-3 h-3 mr-1" />
+                    Assigned to: User #{thread.assignUserId}
+                  </span>
+                  {thread.dueDate && (
+                    <span className="flex items-center">
+                      <Calendar className="w-3 h-3 mr-1" />
+                      Due: {formatDate(thread.dueDate)}
+                    </span>
+                  )}
+                  <span className="flex items-center">
+                    <Clock className="w-3 h-3 mr-1" />
+                    Created: {formatDate(thread.createdAt)}
+                  </span>
+                </div>
+              </div>
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={() => {/* View thread details */}}
+                  className="p-1 hover:bg-gray-200 rounded transition text-gray-500"
+                  title="View Details"
+                >
+                  <Eye className="w-4 h-4" />
+                </button>
+                <button
+                  onClick={() => handleDeleteThreadClick(thread)}
+                  className="p-1 hover:bg-red-100 rounded transition text-red-500"
+                  title="Delete Thread"
+                >
+                  <TrashIcon className="w-4 h-4" />
+                </button>
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+    )}
+  </div>
+)}
           </div>
         </div>
       </div>

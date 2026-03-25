@@ -12,7 +12,8 @@ import { useEffect } from "react";
 import { useUserStore } from "./store/userStore";
 import ViewProject from "./pages/ViewProject";
 import Projects from "./features/project/pages/projectList";
-
+import CreateThread from './features/thread/pages/CreateThread';
+import Threads from "./pages/Threads";
 
 function App() {
   const loadUser = useUserStore((state) => state.loadUser);
@@ -67,6 +68,9 @@ function App() {
       <Route path="/view-project" element={<Projects/>} />
        <Route path="/project/view" element={<Projects/>} />
        <Route path="/project/:id" element={<ViewProject />} />
+       <Route path="/project/:projectId/create-thread" element={<CreateThread />} />
+       <Route path="/threads" element={<Threads />} />
+<Route path="/projects/:projectId/threads" element={<Threads />} />
     </Routes>
   );
 }
