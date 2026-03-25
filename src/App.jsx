@@ -12,6 +12,8 @@ import { useEffect } from "react";
 import { useUserStore } from "./store/userStore";
 import ViewProject from "./pages/ViewProject";
 import Projects from "./features/project/pages/projectList";
+import RoleList from "./features/role/pages/RoleList";
+import CreateRole from "./features/role/pages/CreateRole";
 
 
 function App() {
@@ -24,6 +26,8 @@ function App() {
   return (
     <Routes>
       <Route path="/" element={<Landing />} />
+      <Route path="/role" element={<RoleList/>}/>
+      <Route path="/roles/create" element={<CreateRole />} />
       <Route path="/register" element={<Register />} />
       <Route path="/login" element={<Login />} />
       {/* <Route path="/editor" element={<CreateProject />} /> */}
