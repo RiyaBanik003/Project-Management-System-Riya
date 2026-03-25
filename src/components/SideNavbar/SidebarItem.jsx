@@ -40,13 +40,17 @@ const SidebarItem = ({ item }) => {
               key={index}
               onClick={() => navigate(sub.path)}
               style={{
+                display: "flex",
+                alignItems: "center",
+                gap: "8px",
                 padding: "8px 0",
                 cursor: "pointer",
                 fontSize: "14px",
                 color: "#555"
               }}
             >
-              • {sub.label}
+              <Icon type="thread" size="small" />
+              <span>{sub.label}</span>
             </div>
           ))}
         </div>

@@ -52,6 +52,15 @@ export function Icon({ type, size = 14, style = {} }) {
       <path d="M5 3h14a2 2 0 012 2v14a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2zm7 4l-5 5 2 2 3-3 5 5 2-2z" />
     </svg>
   ),
+  threads: (
+  <svg style={s} viewBox="0 0 24 24" fill="currentColor">
+    {/* Main chat bubble */}
+    <path d="M21 15a4 4 0 01-4 4H8l-5 3V7a4 4 0 014-4h10a4 4 0 014 4z" />
+    
+    {/* Small reply bubble */}
+    <path d="M7 13h6a3 3 0 013 3v1" fill="none" stroke="white" strokeWidth="1.5"/>
+  </svg>
+),
 };
   return map[type] || null;
 }

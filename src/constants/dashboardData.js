@@ -24,13 +24,6 @@ export const COLORS = {
   grayLight: "#F2F2F2",
 };
 
-// export const projects = [
-//   { id: 1, name: "Website Redesign", color: COLORS.blue, progress: 72 },
-//   { id: 2, name: "Mobile App v2", color: COLORS.teal, progress: 45 },
-//   { id: 3, name: "API Integration", color: COLORS.coral, progress: 88 },
-//   { id: 4, name: "Q2 Marketing", color: COLORS.amber, progress: 31 },
-// ];
-
 export const initialTasks = [
   { id: 1, text: "Finalize homepage wireframes", tag: "Design", tagColor: COLORS.blue, tagBg: COLORS.blueLight, due: "Mar 14", done: true },
   { id: 2, text: "Set up CI/CD pipeline", tag: "Dev", tagColor: COLORS.green, tagBg: COLORS.greenLight, due: "Mar 15", done: true },
@@ -77,6 +70,17 @@ export const navItems = [
       { label: "Create Project", path: "/editor" },
       { label: "View Project", path: "/view-project" }
     ]
+  },
+  
+  // Add Threads section
+  {
+    icon: "threads", // or "threads" or "comments"
+    label: "Threads",
+    children: [
+      { label: "All Threads", path: "/threads" },
+      { label: "My Threads", path: "/my-threads" },
+      { label: "Create Thread", path: "/threads/create" }
+    ]
   }
 ];
 
@@ -86,4 +90,3 @@ export const metrics = [
   { label: "Overdue", value: "7", badge: "down", badgeText: "+3", subText: "since last week" },
   { label: "Team velocity", value: "84%", badge: "up", badgeText: "+5%", subText: "vs last sprint" },
 ];
-
