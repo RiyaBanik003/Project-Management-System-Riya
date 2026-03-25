@@ -15,6 +15,8 @@ import Projects from "./features/project/pages/projectList";
 import RoleList from "./features/role/pages/RoleList";
 import CreateRole from "./features/role/pages/CreateRole";
 
+import CreateThread from './features/thread/pages/CreateThread';
+import Threads from "./pages/Threads";
 
 function App() {
   const loadUser = useUserStore((state) => state.loadUser);
@@ -71,6 +73,9 @@ function App() {
       <Route path="/view-project" element={<Projects/>} />
        <Route path="/project/view" element={<Projects/>} />
        <Route path="/project/:id" element={<ViewProject />} />
+       <Route path="/project/:projectId/create-thread" element={<CreateThread />} />
+       <Route path="/threads" element={<Threads />} />
+<Route path="/projects/:projectId/threads" element={<Threads />} />
     </Routes>
   );
 }
